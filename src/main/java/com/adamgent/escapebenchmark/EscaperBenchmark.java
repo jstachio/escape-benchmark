@@ -5,6 +5,11 @@ import org.openjdk.jmh.annotations.Benchmark;
 public class EscaperBenchmark extends BaseBenchmark {
 	
 	@Benchmark
+	public String jmustache() {
+		return run(com.samskivert.mustache.Escapers.HTML);
+	}
+	
+	@Benchmark
 	public String charAt() {
 		return run(Escapers.CHAR_AT);
 	}
