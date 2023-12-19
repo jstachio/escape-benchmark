@@ -13,8 +13,6 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
 
-import com.adamgent.escapebenchmark.StreamEscapers.Lookup7bitStreamEscaper;
-
 @RunWith(Parameterized.class)
 public class StreamEscapersTest {
 
@@ -40,7 +38,8 @@ public class StreamEscapersTest {
 	public static Collection<Object[]> data() {
 		List<StreamEscaper> total = new ArrayList<>();
 		total.addAll(EnumSet.allOf(StreamEscapers.class));
-		total.add(Lookup7bitStreamEscaper.of());
+		total.add(StreamEscapers.LOOKUP);
+		total.add(StreamEscapers.MUSTACHE_DOT_JAVA);
 		return total.stream().map(o -> new Object[] {o, toString(o)}).toList();
 	}
 	

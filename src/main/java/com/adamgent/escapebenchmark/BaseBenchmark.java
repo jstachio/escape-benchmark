@@ -58,5 +58,18 @@ public class BaseBenchmark {
 			throw new UncheckedIOException(e);
 		}
 	}
+	
+	protected static final String runWriter(StreamEscaper escaper) {
+		try {
+			// use custom string writer that is not synchronized
+			StringWriter sb = new StringWriter(new StringBuilder());
+			escaper.escape(sb, DATA1);
+			escaper.escape(sb, NUMBER);
+			escaper.escape(sb, DATA);
+			return sb.toString();
+		} catch (IOException e) {
+			throw new UncheckedIOException(e);
+		}
+	}
 
 }

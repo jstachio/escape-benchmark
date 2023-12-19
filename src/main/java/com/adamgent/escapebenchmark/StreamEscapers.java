@@ -1,6 +1,7 @@
 package com.adamgent.escapebenchmark;
 
 import java.io.IOException;
+import java.io.Writer;
 
 import com.samskivert.mustache.Escapers;
 
@@ -101,6 +102,8 @@ public enum StreamEscapers implements StreamEscaper {
 	};
 	
 	public static StreamEscaper LOOKUP = Lookup7bitStreamEscaper.of();
+	
+	public static StreamEscaper MUSTACHE_DOT_JAVA = new MustacheDotJava();
 
 	private static String escapeChar(
 			char c) {
@@ -218,6 +221,93 @@ public enum StreamEscapers implements StreamEscaper {
 			return lookupTable[c];
 		}
 		
+	}
+	
+	static class MustacheDotJava implements StreamEscaper {
+		private static char[][] ESC = new char[97][];
+
+		static {
+			char[] AMP = "&amp;".toCharArray();
+			char[] LT = "&lt;".toCharArray();
+			char[] GT = "&gt;".toCharArray();
+			char[] DQ = "&quot;".toCharArray();
+			char[] SQ = "&#39;".toCharArray();
+			char[] BQ = "&#x60;".toCharArray();
+			char[] EQ = "&#x3D;".toCharArray();
+			for (int c = 0; c < ESC.length; c++) {
+				if (c <= 13) {
+					ESC[c] = ("&#" + c + ";").toCharArray();
+				} else {
+					switch (c) {
+					case '&':
+						ESC[c] = AMP;
+						break;
+					case '<':
+						ESC[c] = LT;
+						break;
+					case '>':
+						ESC[c] = GT;
+						break;
+					case '"':
+						ESC[c] = DQ;
+						break;
+					case '\'':
+						ESC[c] = SQ;
+						break;
+					case '=':
+						ESC[c] = EQ;
+						break;
+					case '`':
+						ESC[c] = BQ;
+						break;
+					default:
+						ESC[c] = null;
+						break;
+					}
+				}
+			}
+		}
+		
+		@Override
+		public void escape(
+				Appendable a,
+				String raw)
+				throws IOException {
+			escape(raw, new AppendableWriter(a));
+		}
+		
+		@Override
+		public void escape(
+				Writer w,
+				String raw)
+				throws IOException {
+			escape(raw, w);
+		}
+
+		public static void escape(
+				String value,
+				Writer writer)
+				throws IOException {
+			char[] chars = value.toCharArray();
+			int length = chars.length;
+			int start = 0;
+			for (int i = 0; i < length; i++) {
+				char c = chars[i];
+				char[] escaped;
+				// We only possibly escape chars in the range 0-96
+				if (c <= 96 && (escaped = ESC[c]) != null) {
+					// Write from the last replacement to before this one
+					if (i > start)
+						writer.write(chars, start, i - start);
+					// Write the replacement
+					writer.write(escaped);
+					// Move the pointer to the position after replacement
+					start = i + 1;
+				}
+			}
+			writer.write(chars, start, length - start);
+
+		}
 	}
 
 	private static final String QUOT = "&quot;";

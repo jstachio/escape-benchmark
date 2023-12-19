@@ -29,4 +29,9 @@ public class StreamEscaperBenchmark extends BaseBenchmark {
 		return run(StreamEscapers.LOOKUP);
 	}
 	
+	@Benchmark
+	public String streamMustacheJava() {
+		return runWriter(StreamEscapers.MUSTACHE_DOT_JAVA);
+	}
+	
 }
