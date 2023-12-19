@@ -5,7 +5,7 @@ import org.openjdk.jmh.annotations.Benchmark;
 public class StreamEscaperBenchmark extends BaseBenchmark {
 	
 	@Benchmark
-	public String streamOriginal() {
+	public String streamJMustache() {
 		return run(StreamEscapers.ORIGINAL);
 	}
 	
@@ -18,4 +18,15 @@ public class StreamEscaperBenchmark extends BaseBenchmark {
 	public String streamSubstring() {
 		return run(StreamEscapers.SUBSTRING);
 	}
+	
+	@Benchmark
+	public String streamSubstring2() {
+		return run(StreamEscapers.SUBSTRING2);
+	}
+	
+	@Benchmark
+	public String streamLookup() {
+		return run(StreamEscapers.LOOKUP);
+	}
+	
 }
