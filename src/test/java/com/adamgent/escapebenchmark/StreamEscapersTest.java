@@ -38,7 +38,7 @@ public class StreamEscapersTest {
 	public static Collection<Object[]> data() {
 		List<StreamEscaper> total = new ArrayList<>();
 		total.addAll(EnumSet.allOf(StreamEscapers.class));
-		total.add(StreamEscapers.LOOKUP);
+		total.add(StreamEscapers.LOOKUP2);
 		total.add(StreamEscapers.MUSTACHE_DOT_JAVA);
 		return total.stream().map(o -> new Object[] {o, toString(o)}).toList();
 	}

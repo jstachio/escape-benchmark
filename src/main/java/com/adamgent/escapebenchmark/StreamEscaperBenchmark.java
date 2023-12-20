@@ -6,27 +6,42 @@ public class StreamEscaperBenchmark extends BaseBenchmark {
 	
 	@Benchmark
 	public String streamJMustache() {
-		return run(StreamEscapers.ORIGINAL);
+		return run(StreamEscapers.JMUSTACHE);
 	}
 	
 	@Benchmark
-	public String streamCharAt() {
-		return run(StreamEscapers.CHAR_AT);
+	public String streamCharExternalSwitch() {
+		return run(StreamEscapers.CHAR_EXTERNAL_SWITCH);
 	}
 	
 	@Benchmark
-	public String streamSubstring() {
-		return run(StreamEscapers.SUBSTRING);
+	public String streamCharExternalSwitch2() {
+		return run(StreamEscapers.CHAR_EXTERNAL_SWITCH2);
 	}
 	
 	@Benchmark
-	public String streamSubstring2() {
-		return run(StreamEscapers.SUBSTRING2);
+	public String streamSubstringInlineSwitch() {
+		return run(StreamEscapers.SUBSTRING_INLINE_SWITCH);
 	}
 	
 	@Benchmark
-	public String streamLookup() {
-		return run(StreamEscapers.LOOKUP);
+	public String streamSubstringInlineSwitch2() {
+		return run(StreamEscapers.SUBSTRING_INLINE_SWITCH2);
+	}
+	
+	@Benchmark
+	public String streamSubstringExternalSwitch() {
+		return run(StreamEscapers.SUBSTRING_EXTERNAL_SWITCH);
+	}
+	
+	@Benchmark
+	public String streamSubstringExternalSwitch2() {
+		return run(StreamEscapers.SUBSTRING_EXTERNAL_SWITCH2);
+	}
+	
+	@Benchmark
+	public String streamLookup2() {
+		return run(StreamEscapers.LOOKUP2);
 	}
 	
 	@Benchmark

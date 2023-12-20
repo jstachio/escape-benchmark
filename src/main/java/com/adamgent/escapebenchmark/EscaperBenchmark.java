@@ -10,27 +10,33 @@ public class EscaperBenchmark extends BaseBenchmark {
 	}
 	
 	@Benchmark
-	public String charAt() {
-		return run(Escapers.CHAR_AT);
+	public String charExternalSwitch2() {
+		return run(Escapers.CHAR_EXTERNAL_SWITCH2);
 	}
 	
 	@Benchmark
-	public String charAtNoAllocate() {
-		return run(Escapers.CHAR_AT_NO_ALLOCATE);
+	public String charInlineSwitch() {
+		return run(Escapers.CHAR_INLINE_SWITCH);
+	}
+	
+	@Benchmark
+	public String charSwitchPreAllocate() {
+		return run(Escapers.CHAR_INLINE_SWITCH_PRE_ALLOCATE);
 	}
 
 	@Benchmark
-	public String substring() {
-		return run(Escapers.SUBSTRING);
+	public String substringInlineSwitchPreAllocate() {
+		return run(Escapers.SUBSTRING_INLINE_SWITCH_PRE_ALLOCATE);
 	}
 	
 	@Benchmark
-	public String substringNoAllocate() {
-		return run(Escapers.SUBSTRING_NO_ALLOCATE);
+	public String substringInlineSwitch2() {
+		return run(Escapers.SUBSTRING_INLINE_SWITCH2);
 	}
 	
 	@Benchmark
-	public String best() {
-		return run(Escapers.BEST);
+	public String substringExternalSwitch2() {
+		return run(Escapers.SUBSTRING_EXTERNAL_SWITCH2);
 	}
+
 }

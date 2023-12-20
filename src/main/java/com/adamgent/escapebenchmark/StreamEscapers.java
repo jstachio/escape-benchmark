@@ -6,7 +6,7 @@ import java.io.Writer;
 import com.samskivert.mustache.Escapers;
 
 public enum StreamEscapers implements StreamEscaper {
-	ORIGINAL() {
+	JMUSTACHE() {
 		@Override
 		public void escape(
 				Appendable a,
@@ -15,7 +15,26 @@ public enum StreamEscapers implements StreamEscaper {
 			a.append(Escapers.HTML.escape(raw));
 		}
 	},
-	CHAR_AT() {
+	CHAR_EXTERNAL_SWITCH() {
+		@Override
+		public void escape(
+				Appendable a,
+				String raw)
+				throws IOException {
+			int end = raw.length();
+			for (int i = 0; i < end; i++) {
+				char c = raw.charAt(i);
+				String found = escapeChar(c);
+				if (found != null) {
+					a.append(found);
+				}
+				else {
+					a.append(c);
+				}
+			}
+		}
+	},
+	CHAR_EXTERNAL_SWITCH2() {
 		@Override
 		public void escape(
 				Appendable a,
@@ -44,7 +63,146 @@ public enum StreamEscapers implements StreamEscaper {
 			a.append(raw);
 		}
 	},
-	SUBSTRING() {
+	SUBSTRING_INLINE_SWITCH() {
+		@Override
+		public void escape(
+				Appendable a,
+				String csq)
+				throws IOException {
+			int start = 0;
+			int end = csq.length();
+			for (int i = start; i < end; i++) {
+				char c = csq.charAt(i);
+				switch (c) {
+				case '"' -> { // 34
+					a.append(csq, start, i);
+					start = i + 1;
+					a.append(QUOT);
+					//start = appendAndIncrement(a, csq, start, i, QUOT);
+				}
+				case '&' -> { // 38
+					a.append(csq, start, i);
+					start = i + 1;
+					a.append(AMP);
+					//start = appendAndIncrement(a, csq, start, i, AMP);
+				}
+				case '\'' -> { // 39
+					a.append(csq, start, i);
+					start = i + 1;
+					a.append(APOS);
+					//start = appendAndIncrement(a, csq, start, i, APOS);
+
+				}
+				case '<' -> { // 60
+					a.append(csq, start, i);
+					start = i + 1;
+					a.append(LT);
+					//start = appendAndIncrement(a, csq, start, i, LT);
+
+				}
+				case '=' -> { // 61
+					a.append(csq, start, i);
+					start = i + 1;
+					a.append(EQUAL);
+					//start = appendAndIncrement(a, csq, start, i, EQUAL);
+
+				}
+				case '>' -> { // 62
+					a.append(csq, start, i);
+					start = i + 1;
+					a.append(GT);
+					//start = appendAndIncrement(a, csq, start, i, GT);
+
+				}
+				case '`' -> { // 96
+					a.append(csq, start, i);
+					start = i + 1;
+					a.append(BACK_TICK);
+					//start = appendAndIncrement(a, csq, start, i, BACK_TICK);
+
+				}
+				default -> { // NOSONAR
+				} // NOSONAR
+				}
+			}
+			a.append(csq, start, end);
+		}
+	},
+	SUBSTRING_INLINE_SWITCH2() {
+		@Override
+		public void escape(
+				Appendable a,
+				String csq)
+				throws IOException {
+			int end = csq.length();
+			for (int i = 0; i < end; i++) {
+				char c = csq.charAt(i);
+				String found = switch (c) {
+				case '"' -> QUOT;
+				case '&' -> AMP;
+				case '\'' -> APOS;
+				case '<' -> LT;
+				case '=' -> EQUAL;
+				case '>' -> GT;
+				case '`' -> BACK_TICK;
+				default -> null;
+				};
+				if (found != null) {
+					a.append(csq, 0, i);
+					a.append(found);
+					i++;
+					int start = i;
+					for (; i < end; i++) {
+						c = csq.charAt(i);
+						switch (c) {
+						case '"' -> { // 34
+							a.append(csq, start, i);
+							start = i + 1;
+							a.append(QUOT);
+						}
+						case '&' -> { // 38
+							a.append(csq, start, i);
+							start = i + 1;
+							a.append(AMP);
+						}
+						case '\'' -> { // 39
+							a.append(csq, start, i);
+							start = i + 1;
+							a.append(APOS);
+						}
+						case '<' -> { // 60
+							a.append(csq, start, i);
+							start = i + 1;
+							a.append(LT);
+						}
+						case '=' -> { // 61
+							a.append(csq, start, i);
+							start = i + 1;
+							a.append(EQUAL);
+						}
+						case '>' -> { // 62
+							a.append(csq, start, i);
+							start = i + 1;
+							a.append(GT);
+						}
+						case '`' -> { // 96
+							a.append(csq, start, i);
+							start = i + 1;
+							a.append(BACK_TICK);
+						}
+						default -> { // NOSONAR
+						} // NOSONAR
+						}
+					}
+					a.append(csq, start, i);
+					return;
+					
+				}
+			}
+			a.append(csq);
+		}
+	},
+	SUBSTRING_EXTERNAL_SWITCH() {
 		@Override
 		public void escape(
 				Appendable a,
@@ -64,7 +222,7 @@ public enum StreamEscapers implements StreamEscaper {
 			a.append(raw, start, end);
 		}
 	},
-	SUBSTRING2() {
+	SUBSTRING_EXTERNAL_SWITCH2() {
 		@Override
 		public void escape(
 				Appendable a,
@@ -75,10 +233,10 @@ public enum StreamEscapers implements StreamEscaper {
 				char c = raw.charAt(i);
 				String found = escapeChar(c);
 				/*
-				 * While this could be done with one loop
-				 * it appears through benchmarking that the
-				 * by having hte first loop assume the string to be not 
-				 * changed creates a fast path.
+				 * While this could be done with one loop it appears through
+				 * benchmarking that by having the first loop assume the string
+				 * to be not changed creates a fast path for strings with no
+				 * escaping needed.
 				 */
 				if (found != null) {
 					a.append(raw, 0, i);
@@ -101,7 +259,13 @@ public enum StreamEscapers implements StreamEscaper {
 		}
 	};
 	
-	public static StreamEscaper LOOKUP = Lookup7bitStreamEscaper.of();
+//	private static int appendAndIncrement(Appendable a, String raw, int start, int i, String escaped) throws IOException {
+//		a.append(raw, start, i);
+//		a.append(escaped);
+//		return i + 1;
+//	}
+	
+	public static StreamEscaper LOOKUP2 = Lookup7bitStreamEscaper.of();
 	
 	public static StreamEscaper MUSTACHE_DOT_JAVA = new MustacheDotJava();
 
@@ -188,10 +352,10 @@ public enum StreamEscapers implements StreamEscaper {
 				char c = raw.charAt(i);
 				String found = escapeChar(lookupTable, c);
 				/*
-				 * While this could be done with one loop
-				 * it appears through benchmarking that the
-				 * by having hte first loop assume the string to be not 
-				 * changed creates a fast path.
+				 * While this could be done with one loop it appears through
+				 * benchmarking that by having the first loop assume the string
+				 * to be not changed creates a fast path for strings with no
+				 * escaping needed.
 				 */
 				if (found != null) {
 					a.append(raw, 0, i);
