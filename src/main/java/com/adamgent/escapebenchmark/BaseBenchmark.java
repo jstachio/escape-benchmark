@@ -18,12 +18,12 @@ import com.samskivert.mustache.Mustache.Escaper;
 
 
 @Fork(1)
-@Warmup(iterations = 1)
-@Measurement(iterations = 3)
+@Warmup(iterations = 2)
+@Measurement(iterations = 5)
 @BenchmarkMode(Mode.Throughput)
-@OutputTimeUnit(TimeUnit.SECONDS)
+@OutputTimeUnit(TimeUnit.MILLISECONDS)
 @State(Scope.Benchmark)
-@Threads(16)
+@Threads(2)
 public class BaseBenchmark {
 	
 	protected static final String DATA1 = """
